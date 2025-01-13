@@ -1,5 +1,4 @@
 import type { RequestHandler } from "express";
-
 import boatRepository from "./boatRepository";
 
 const browse: RequestHandler = async (req, res, next) => {
@@ -16,7 +15,28 @@ const browse: RequestHandler = async (req, res, next) => {
 };
 
 const edit: RequestHandler = async (req, res, next) => {
-  // your code here
+  try {
+    const { id } = req.params;
+    const { coord_x, coord_y } = req.body;
+
+    const updated = await boatRepository.update({
+      id: Number(id),
+      coord_x: Number(coord_x),
+      coord_y: Number(coord_y),
+    });
+
+    if (updated === 0) {
+      res.status(404).json({ error: "Bateau non trouvé." });
+    }
+
+    if (updated) {
+      res.sendStatus(204);
+    } else {
+      res.status(404).json({ error: "Bateau non trouvé." });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 export default {
