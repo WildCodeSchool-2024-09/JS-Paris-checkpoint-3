@@ -1,11 +1,18 @@
 // Load the express module to create a web application
-
+import fs from "node:fs";
+import path from "node:path";
+import cors from "cors";
 import express from "express";
+import type { ErrorRequestHandler } from "express";
+import router from "./router";
+
 
 const app = express();
 
 // Configure it
+app.use(express.json());
 
+app.use("/api", router);
 /* ************************************************************************* */
 
 // CORS Handling: Why is the current code present and do I need to define specific allowed origins for my project?
@@ -17,8 +24,6 @@ const app = express();
 
 // You should NOT do that: such code uses the `cors` module to allow all origins, which can pose security issues.
 // For this pedagogical template, the CORS code allows CLIENT_URL in development mode (when process.env.CLIENT_URL is defined).
-
-import cors from "cors";
 
 if (process.env.CLIENT_URL != null) {
   app.use(cors({ origin: [process.env.CLIENT_URL] }));
@@ -60,10 +65,9 @@ app.use(express.json());
 /* ************************************************************************* */
 
 // Import the API router
-import router from "./router";
 
 // Mount the API router under the "/api" endpoint
-app.use(router);
+  app.use("/api", router);
 
 /* ************************************************************************* */
 
@@ -74,9 +78,6 @@ app.use(router);
 // What it's for:
 // - Serving client static files from the server, which is useful when building a single-page application with React.
 // - Redirecting unhandled requests (e.g., all requests not matching a defined API route) to the client's index.html. This allows the client to handle client-side routing.
-
-import fs from "node:fs";
-import path from "node:path";
 
 // Serve server resources
 
@@ -104,8 +105,6 @@ if (fs.existsSync(clientBuildPath)) {
 
 // Middleware for Error Logging
 // Important: Error-handling middleware should be defined last, after other app.use() and routes calls.
-
-import type { ErrorRequestHandler } from "express";
 
 // Define a middleware function to log errors
 const logErrors: ErrorRequestHandler = (err, req, res, next) => {
