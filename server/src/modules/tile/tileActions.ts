@@ -1,14 +1,27 @@
 import type { RequestHandler } from "express";
+import tileRepository from "./tileRepository";
+
+// biome-ignore format: spaces
 
 const browse: RequestHandler = async (req, res, next) => {
-  // your code here
+	try {
+		const tiles = await tileRepository.readAll();
+
+		res.status(200).json(tiles);
+	} catch (error) {
+		next(error);
+	}
 };
+
+// biome-ignore format: spaces
 
 const validate: RequestHandler = async (req, res, next) => {
-  // your code here
+	// your code here
 };
 
+// biome-ignore format: spaces
+
 export default {
-  browse,
-  validate,
+	browse,
+	validate,
 };
