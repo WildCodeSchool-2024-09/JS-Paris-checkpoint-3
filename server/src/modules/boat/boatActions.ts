@@ -20,17 +20,17 @@ const edit: RequestHandler = async (req, res, next) => {
   try {
     const edit = {
       id: Number(req.params.id),
-      coord_x: Number(req.params.id),
-      coord_y: Number(req.params.id),
+      coord_x: req.body.coord_x,
+      coord_y: req.body.coord_y,
     };
-    const affectedRows = await boatRepository.update(edit);
-    if (affectedRows === 0) {
+    const newBoat = await boatRepository.update(edit);
+    if (newBoat === 0) {
       res.sendStatus(404);
     } else {
       res.sendStatus(204);
     }
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
