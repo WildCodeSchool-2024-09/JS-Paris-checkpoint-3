@@ -2,7 +2,7 @@ import databaseClient from "../../../database/client";
 
 import type { Result, Rows } from "../../../database/client";
 
-type Boat = {
+export type Boat = {
   id: number;
   name: string;
   coord_x: number;
@@ -20,9 +20,36 @@ class BoatRepository {
     return rows as Boat[];
   }
 
-  async update(boatToUpdate: Partial<Boat>) {
-    // your code here
-    return 0;
+  async update(boatToUpdate: Partial<Boat>): Promise<number> {
+    if (!boatToUpdate.id) {
+      throw new Error("Missing boat ID for update.");
+    }
+
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT id FROM boat WHERE id = ?",
+      [boatToUpdate.id],
+    );
+
+    if ((rows as Boat[]).length === 0) {
+      return 0;
+    }
+
+    const fieldsToUpdate = Object.entries(boatToUpdate)
+      .filter(([key]) => key !== "id")
+      .map(([key]) => `${key} = ?`)
+      .join(", ");
+
+    const values = Object.entries(boatToUpdate)
+      .filter(([key]) => key !== "id")
+      .map(([, value]) => value);
+
+    values.push(boatToUpdate.id);
+
+    const [result] = await databaseClient.query<Result>(
+      `UPDATE boat SET ${fieldsToUpdate} WHERE id = ?`,
+      values,
+    );
+    return result.affectedRows || 0;
   }
 }
 
