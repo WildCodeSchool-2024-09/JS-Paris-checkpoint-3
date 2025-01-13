@@ -23,6 +23,15 @@ class TileRepository {
 
   async readByCoordinates(coordX: number, coordY: number) {
     // your code here
+    try {
+      const [rows] = await databaseClient.query<Rows>(
+        "SELECT * FROM tile WHERE coord_x=? AND coord_y=?",
+        [coordX, coordY],
+      );
+      return rows as Tile[];
+    } catch (error) {
+      next(error);
+    }
   }
 
   async getRandomIsland() {
@@ -48,3 +57,6 @@ class TileRepository {
 }
 
 export default new TileRepository();
+function next(error: unknown) {
+  throw new Error("Function not implemented.");
+}
