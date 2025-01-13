@@ -9,15 +9,31 @@ type Boat = {
   coord_y: number;
 };
 
-class BoatRepository {
-  async readAll(where = {}) {
-    // Execute the SQL SELECT query to retrieve all boats from the "boat" table
-    const [rows] = await databaseClient.query<Rows>(
-      "select boat.id, boat.coord_x, boat.coord_y, boat.name, tile.type, tile.has_treasure from boat JOIN tile ON boat.coord_y = tile.coord_y AND boat.coord_x = tile.coord_x order by coord_y, coord_x",
-    );
+type Where = {
+  name?: string
+}
 
-    // Return the array of tiles
-    return rows as Boat[];
+class BoatRepository {
+  async readAll(where?: Where) {
+    // Execute the SQL SELECT query to retrieve all boats from the "boat" table
+    if (where?.name) {
+      const [rows] = await databaseClient.query<Rows>
+      (
+				"select boat.id, boat.coord_x, boat.coord_y, boat.name, tile.type, tile.has_treasure from boat JOIN tile ON boat.coord_y = tile.coord_y AND boat.coord_x = tile.coord_x WHERE boat.name = ? order by coord_y, coord_x",
+        [where.name]
+			);
+
+			// Return the array of tiles
+			return rows as Boat[];
+    }
+
+    const [rows] = await databaseClient.query<Rows>
+    (
+			"select boat.id, boat.coord_x, boat.coord_y, boat.name, tile.type, tile.has_treasure from boat JOIN tile ON boat.coord_y = tile.coord_y AND boat.coord_x = tile.coord_x order by coord_y, coord_x",
+		);
+
+		// Return the array of tiles
+		return rows as Boat[];
   }
 
   async update(boatToUpdate: Partial<Boat>) {
