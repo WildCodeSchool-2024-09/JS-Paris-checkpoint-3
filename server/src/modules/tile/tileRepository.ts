@@ -22,7 +22,12 @@ class TileRepository {
   }
 
   async readByCoordinates(coordX: number, coordY: number) {
-    // your code here
+    const [rows] = await databaseClient.query<Rows>(
+      "select * from tile where coord_x = ? and coord_y = ?",
+      [coordX, coordY],
+    );
+
+    return rows as Tile[];
   }
 
   async getRandomIsland() {
@@ -43,6 +48,15 @@ class TileRepository {
       [island.id],
     );
 
+    return result.affectedRows;
+  }
+
+  async update(tileToUpdate: Partial<Tile>) {
+    // your code here
+    const [result] = await databaseClient.query<Result>(
+      "update tile set coord_x = ?, coord_y = ? where id = ?",
+      [tileToUpdate.coord_x, tileToUpdate.coord_y, tileToUpdate.id],
+    );
     return result.affectedRows;
   }
 }
