@@ -7,9 +7,9 @@ const browse: RequestHandler = async (req, res, next) => {
 	try {
 		const tiles = await tileRepository.readAll();
 
-		res.status(200).json(tiles);
-	} catch (error) {
-		next(error);
+		res.json(tiles);
+	} catch (err) {
+		next(err);
 	}
 };
 
