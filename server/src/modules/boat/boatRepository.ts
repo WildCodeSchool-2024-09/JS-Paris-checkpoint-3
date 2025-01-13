@@ -13,7 +13,7 @@ class BoatRepository {
   async readAll(where = {}) {
     // Execute the SQL SELECT query to retrieve all boats from the "boat" table
     const [rows] = await databaseClient.query<Rows>(
-      "select * from boat order by coord_y, coord_x",
+      "select * from boat order by coord_y, coord_x"
     );
 
     // Return the array of tiles
@@ -21,8 +21,18 @@ class BoatRepository {
   }
 
   async update(boatToUpdate: Partial<Boat>) {
-    // your code here
-    return 0;
+    const { id, coord_x, coord_y } = boatToUpdate;
+
+    if (!id || coord_x === undefined || coord_y === undefined) {
+      throw new Error("Missing id, coord_x, or coord_y for the update");
+    }
+
+    const [result] = await databaseClient.query<Result>(
+      "UPDATE boat SET coord_x = ?, coord_y = ? WHERE id = ?",
+      [coord_x, coord_y, id]
+    );
+
+    return result.affectedRows;
   }
 }
 
