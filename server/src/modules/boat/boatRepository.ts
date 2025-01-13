@@ -25,18 +25,18 @@ class BoatRepository {
 	}
 
 	async update(boatToUpdate: Partial<Boat>) {
-		// Ensure the boat ID is provided
+		
 		if (!boatToUpdate.id) {
 			throw new Error("Boat ID is required to update.");
 		}
 
-		// Execute the SQL UPDATE query to modify the boat
+		
 		const [result] = await databaseClient.query<Result>(
 			"update boat set coord_x = ?, coord_y = ? where id = ?",
 			[boatToUpdate.coord_x, boatToUpdate.coord_y, boatToUpdate.id],
 		);
 
-		// Return the number of affected rows
+		
 		return result.affectedRows;
 	}
 }
